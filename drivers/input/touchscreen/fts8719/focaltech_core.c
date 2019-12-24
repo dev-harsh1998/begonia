@@ -627,11 +627,10 @@ static int fts_read_touchdata(struct fts_ts_data *data)
 
 	memset(buf, 0xFF, data->pnt_buf_size);
 	ret = fts_read(NULL, 0, buf + 1, data->pnt_buf_size - 1);
-	if ((0xEF == buf[2]) && (0xEF == buf[3]) && (0xEF == buf[4])) {
-		/* check if need recovery fw */
-		fts_fw_recovery();
+
+	if ((0xEF == buf[2]) && (0xEF == buf[3]) && (0xEF == buf[4]))
 		return 1;
-	}
+
 	if ((ret < 0) || ((buf[1] & 0xF0) != 0x90)) {
 		FTS_ERROR("touch data(%x) abnormal,ret:%d", buf[1], ret);
 		return -EIO;
@@ -1613,19 +1612,6 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
 	}
 #endif
 
-#if FTS_TEST_EN
-	ret = fts_test_init(ts_data);
-	if (ret) {
-		FTS_ERROR("init production test fail");
-	}
-#if FTS_PROC_GET_TESTDATA_EN
-	ret = fts_test_proc_init(ts_data);
-	if (ret < 0) {
-		FTS_ERROR("init proc interface to get testdata fail");
-	}
-#endif
-#endif
-
 #if FTS_ESDCHECK_EN
 	ret = fts_esdcheck_init(ts_data);
 	if (ret) {
@@ -1664,11 +1650,6 @@ static int fts_ts_probe_entry(struct fts_ts_data *ts_data)
 	if (ret) {
 		FTS_ERROR("request irq failed");
 		goto err_irq_req;
-	}
-
-	ret = fts_fwupg_init(ts_data);
-	if (ret) {
-		FTS_ERROR("init fw upgrade fail");
 	}
 
 #if defined(CONFIG_FB)
@@ -1736,13 +1717,6 @@ static int fts_ts_remove_entry(struct fts_ts_data *ts_data)
 #endif
 
 	fts_ex_mode_exit(ts_data);
-
-	fts_fwupg_exit(ts_data);
-
-#if FTS_TEST_EN
-	fts_test_proc_exit(ts_data);
-	fts_test_exit(ts_data);
-#endif
 
 #if FTS_ESDCHECK_EN
 	fts_esdcheck_exit(ts_data);
