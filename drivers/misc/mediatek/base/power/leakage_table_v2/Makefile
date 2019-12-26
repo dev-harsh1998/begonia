@@ -63,4 +63,3 @@ obj-$(CONFIG_MACH_MT6768) += mtk_static_power_mt6768.o
 # MT6785
 obj-$(CONFIG_MACH_MT6785) += mtk_static_power.o
 obj-$(CONFIG_MACH_MT6785) += mtk_static_power_mt6785.o
-ccflags-y += -Wno-maybe-uninitialized
